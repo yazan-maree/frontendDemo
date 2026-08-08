@@ -28,7 +28,7 @@ function App() {
   const fetchShoes = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/shoes');
+      const response = await fetch('https://backenddemo-nlkq.onrender.com');
       const result = await response.json();
       if (result.success) setShoes(result.data);
     } catch (err) {
@@ -65,7 +65,7 @@ function App() {
       const formData = new FormData();
       formData.append('image', selectedFile);
 
-      const uploadRes = await fetch('http://localhost:5000/api/upload', {
+      const uploadRes = await fetch('https://backenddemo-nlkq.onrender.com', {
         method: 'POST',
         body: formData,
       });
@@ -81,7 +81,7 @@ function App() {
         image: uploadData.url
       };
 
-      const res = await fetch('http://localhost:5000/api/shoes', {
+      const res = await fetch('https://backenddemo-nlkq.onrender.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(shoeData)
@@ -105,7 +105,7 @@ function App() {
   const handleDeleteShoe = async (id) => {
     if (!window.confirm('هل أنت تأكد من حذف هذا الحذاء؟')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/shoes/${id}`, { method: 'DELETE' });
+      const res = await fetch(`https://backenddemo-nlkq.onrender.com${id}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) fetchShoes();
     } catch (err) {
