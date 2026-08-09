@@ -51,7 +51,7 @@ function App() {
     }
   };
 
-  // رفع الصورة وإضافة الحذاء
+// رفع الصورة وإضافة الحذاء
   const handleAddShoe = async (e) => {
     e.preventDefault();
     if (!selectedFile) {
@@ -66,12 +66,18 @@ function App() {
       formData.append('image', selectedFile);
 
       const uploadRes = await fetch('https://backenddemo-nlkq.onrender.com/api/upload', {
-  method: 'POST',
-  body: formData,
-});
+        method: 'POST',
+        body: formData,
+      });
+
+      // إذا كان السيرفر أرجع 404 أو 500
+      if (!uploadRes.ok) {
+        throw new Error(`خطأ من السيرفر (${uploadRes.status}): المسار /api/upload غير موجود على Render أو يحتوي مشكلة`);
+      }
+
       const uploadData = await uploadRes.json();
 
-      if (!uploadData.success) throw new Error(uploadData.message);
+      if (!uploadData.success) throw new Error(uploadData.message || 'فشل رفع الصورة');
 
       // 2. حفظ بيانات الحذاء بالرابط الجديد
       const shoeData = {
@@ -82,12 +88,16 @@ function App() {
       };
 
       const res = await fetch('https://backenddemo-nlkq.onrender.com/api/shoes', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(shoeData)
-});
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(shoeData)
+      });
+
+      if (!res.ok) {
+        throw new Error(`خطأ في حفظ الحذاء (${res.status})`);
+      }
 
       const data = await res.json();
 
@@ -99,12 +109,12 @@ function App() {
         alert('تم رفع الصورة وإضافة الحذاء بنجاح!');
       }
     } catch (err) {
-      alert('فشل في رفع الصورة، تأكد من إنشاء bucket اسمه shoes في Supabase');
+      console.error('تفاصيل الخطأ:', err);
+      alert(`حدث خطأ: ${err.message}`);
     } finally {
       setUploading(false);
     }
   };
-
   const handleDeleteShoe = async (id) => {
     if (!window.confirm('هل أنت تأكد من حذف هذا الحذاء؟')) return;
     try {
